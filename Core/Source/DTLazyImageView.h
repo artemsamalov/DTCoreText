@@ -8,6 +8,7 @@
 
 
 #import <ImageIO/ImageIO.h>
+#import "ImageLoader.h"
 
 @class DTLazyImageView;
 
