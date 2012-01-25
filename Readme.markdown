@@ -3,6 +3,10 @@ DTCoreText
 
 This project aims to duplicate the methods present on Mac OSX which allow creation of `NSAttributedString` from HTML code on iOS. Previously we referred to it as NSAttributedString+HTML (or NSAS+HTML in short) but this only covers about half of what this framework does. 
 
+Please support us so that we can continue to make DTCoreText even more awesome!
+
+<a href='http://www.pledgie.com/campaigns/16615'><img alt='Click here to lend your support to: Migrate DTCoreText to libxml2 and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/16615.png?skin_name=chrome' border='0' /></a>
+
 The project covers two broad areas:
 
 1. Layouting - Interfacing with CoreText, generating NSAttributedString instances from HTML code
@@ -42,6 +46,8 @@ These are your options for adding DTCoreText to your project.
 When linking you need to add the -ObjC and -all_load to your app target's "Other Linker Flags". If your app does not use ARC yet (but DTCoreText does) then you also need the -fobjc-arc linker flag.
 
 When building from source it is recommended that you at the ALLOW_IPHONE_SPECIAL_CASES define to your PCH, this setting is "baked into" the library and framework targets.
+
+The project has been changed to use libxml2 for parsing HTML, so you need to link in the libxml2.dylib as well.
 
 Known Issues
 ------------
