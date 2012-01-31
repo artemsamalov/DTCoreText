@@ -15,11 +15,18 @@
 
 typedef enum
 {
+	DTHTMLElementDisplayStyleInline = 0, // default
+	DTHTMLElementDisplayStyleNone,
+	DTHTMLElementDisplayStyleBlock,
+	DTHTMLElementDisplayStyleListItem
+} DTHTMLElementDisplayStyle;
+
+typedef enum
+{
 	DTHTMLElementFloatStyleNone = 0,
 	DTHTMLElementFloatStyleLeft,
 	DTHTMLElementFloatStyleRight
 } DTHTMLElementFloatStyle;
-
 
 typedef enum
 {
@@ -30,7 +37,7 @@ typedef enum
 
 @interface DTHTMLElement : NSObject <NSCopying>
 
-@property (nonatomic, assign) DTHTMLElement *parent;	// subtle simulator bug - use assign not __unsafe_unretained
+@property (nonatomic, strong) DTHTMLElement *parent;
 @property (nonatomic, copy) DTCoreTextFontDescriptor *fontDescriptor;
 @property (nonatomic, copy) DTCoreTextParagraphStyle *paragraphStyle;
 @property (nonatomic, strong) DTTextAttachment *textAttachment;
@@ -45,8 +52,7 @@ typedef enum
 @property (nonatomic, assign) BOOL strikeOut;
 @property (nonatomic, assign) NSInteger superscriptStyle;
 @property (nonatomic, assign) NSInteger headerLevel;
-@property (nonatomic, readonly) BOOL isInline;
-@property (nonatomic, readonly) BOOL isMeta;
+@property (nonatomic, assign) DTHTMLElementDisplayStyle displayStyle;
 @property (nonatomic, readonly) DTHTMLElementFloatStyle floatStyle;
 @property (nonatomic, assign) BOOL isColorInherited;
 @property (nonatomic, assign) BOOL preserveNewlines;
