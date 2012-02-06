@@ -46,6 +46,7 @@
 	CGPoint _layoutOffset;
     CGSize _backgroundOffset;
 	
+	NSMutableArray *_images;
 	// lookup bitmask what delegate methods are implemented
 	struct 
 	{
@@ -743,6 +744,26 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 	}
 }
 
+- (NSMutableArray*)images {
+	if (_images) {
+		_images = [NSMutableArray new];
+        DTCoreTextLayoutFrame *theLayoutFrame = self.layoutFrame;
+        NSArray *lines = [theLayoutFrame lines];
+        
+        for (DTCoreTextLayoutLine *oneLine in lines) {
+            for (DTCoreTextGlyphRun *oneRun in oneLine.glyphRuns) {
+                DTTextAttachment *attachment = oneRun.attachment;
+                
+                if (attachment && attachment.contentType == DTTextAttachmentTypeImage) {
+                    if (attachment.contentURL) {
+                        [_images addObject:attachment.contentURL];
+                    }
+                }
+            }
+        }
+	}
+	return _images;
+}
 
 - (dispatch_semaphore_t)selfLock
 {
@@ -769,5 +790,6 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 @synthesize customViews;
 @synthesize customViewsForLinksIndex;
 @synthesize customViewsForAttachmentsIndex;
+@synthesize images = _images;
 
 @end

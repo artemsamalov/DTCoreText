@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#define ImageLoaderDownloadStartNotification @"ImageLoaderDownloadStartNotification"
+#define ImageLoaderDownloadStopNotification  @"ImageLoaderDownloadStopNotification"
+
 @interface ImageLoader : NSObject
 
 //
@@ -15,5 +18,6 @@
 // image in result block can be null if loader failes to download content from url
 //
 + (UIImage*)loadImageForURL:(NSString*)url result:(void (^)(UIImage* image))result;
++ (UIImage*)thumbnailForURL:(NSString*)url size:(CGSize)size result:(void (^)(UIImage* image))result;
 
 @end

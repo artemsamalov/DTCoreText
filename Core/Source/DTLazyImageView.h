@@ -15,6 +15,7 @@
 @protocol DTLazyImageViewDelegate <NSObject>
 @optional
 - (void)lazyImageView:(DTLazyImageView *)lazyImageView didChangeImageSize:(CGSize)size;
+- (void)lazyImageView:(DTLazyImageView *)lazyImageView didTouchEvent:(UITapGestureRecognizer*)sender;
 @end
 
 @interface DTLazyImageView : UIImageView 

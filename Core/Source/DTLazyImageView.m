@@ -12,6 +12,7 @@
 @interface DTLazyImageView ()
 
 - (void)completeDownloadWithImage:(UIImage *)image;
+- (void)startLoadImage;
 
 @end
 
@@ -34,20 +35,26 @@
 
 - (void)didMoveToSuperview {
 	[super didMoveToSuperview];
-	
-    if (timerStartLoadImage) {
-        timerStartLoadImage = [NSTimer scheduledTimerWithTimeInterval:DEFAULT_TIME_INTERVAL target:self selector:@selector(startLoadImage) userInfo:nil repeats:NO];
-        return;
-    } else if ([timerStartLoadImage isValid]) {
-        [timerStartLoadImage invalidate];
-    }
+	self.userInteractionEnabled = YES;
     
-    timerStartLoadImage = [NSTimer scheduledTimerWithTimeInterval:DEFAULT_TIME_INTERVAL target:self selector:@selector(startLoadImage) userInfo:nil repeats:NO];
+    UITapGestureRecognizer *singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    [self addGestureRecognizer:singleFingerTap];
+    
+    /*if (timerStartLoadImage) {
+	 timerStartLoadImage = [NSTimer scheduledTimerWithTimeInterval:DEFAULT_TIME_INTERVAL target:self selector:@selector(startLoadImage) userInfo:nil repeats:NO];
+	 return;
+	 } else if ([timerStartLoadImage isValid]) {
+	 [timerStartLoadImage invalidate];
+	 }
+	 
+	 timerStartLoadImage = [NSTimer scheduledTimerWithTimeInterval:DEFAULT_TIME_INTERVAL target:self selector:@selector(startLoadImage) userInfo:nil repeats:NO];*/
+    [self startLoadImage];
 }
 
 - (void)startLoadImage {
     if (!self.image && _url && self.superview) {
-		UIImage *image = [ImageLoader loadImageForURL:[_url absoluteString] result:^(UIImage *image) {
+        
+        UIImage *image = [ImageLoader thumbnailForURL:[_url absoluteString] size:CGSizeMake(300.0f, 0.0f) result:^(UIImage *image) {
             if (image) {
                 [self completeDownloadWithImage:image];
             }
@@ -74,14 +81,11 @@
 - (void)completeDownloadWithImage:(UIImage *)image {	
 	self.image = image;
 	
-	self.bounds = CGRectMake(0.0, 0.0, image.size.width, image.size.height);
-	
-	//	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSValue valueWithCGSize:CGSizeMake(_fullWidth, _fullHeight)], @"ImageSize", _url, @"ImageURL", nil];
+    self.bounds = CGRectMake(0.0, 0.0, image.size.width, image.size.height);
 	
 	if ([self.delegate respondsToSelector:@selector(lazyImageView:didChangeImageSize:)]) {
 		[self.delegate lazyImageView:self didChangeImageSize:CGSizeMake(image.size.width, image.size.height)];
-	}
-    //	[[NSNotificationCenter defaultCenter] postNotificationName:@"DTLazyImageViewDidFinishLoading" object:nil userInfo:userInfo];	
+	}	
 }
 
 
@@ -89,10 +93,20 @@
 {
 	[super removeFromSuperview];
     
+    self.userInteractionEnabled = NO;
     self.image = nil;
     
     if (timerStartLoadImage) {
         [timerStartLoadImage invalidate];
+    }
+}
+
+//The event handling method
+- (void)handleSingleTap:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if ([self.delegate respondsToSelector:@selector(lazyImageView:didTouchEvent:)]) {
+            [self.delegate lazyImageView:self didTouchEvent:sender];
+        }
     }
 }
 
