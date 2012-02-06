@@ -10,8 +10,13 @@
 #import "DTCSSListStyle.h"
 
 #import "DTHTMLElement.h"
-#import "NSString+HTML.h"
 #import "NSScanner+HTML.h"
+#import "NSString+CSS.h"
+
+
+// external symbols generated via custom build rule and xxd
+extern unsigned char default_css[];
+extern unsigned int default_css_len;
 
 
 @interface DTCSSStylesheet ()
@@ -25,6 +30,15 @@
 {
 	NSMutableDictionary *_styles;
 	
+}
+
++ (DTCSSStylesheet *)defaultStyleSheet
+{
+	// get the data from the external symbol
+	NSData *data = [NSData dataWithBytes:default_css length:default_css_len];
+	NSString *cssString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	
+	return [[DTCSSStylesheet alloc] initWithStyleBlock:cssString];
 }
 
 - (id)initWithStyleBlock:(NSString *)css
@@ -78,8 +92,8 @@
 		BOOL typeWasSet = NO;
 		BOOL positionWasSet = NO;
 		
-		DTCSSListStyleType listStyleType = NSNotFound;
-		DTCSSListStylePosition listStylePosition = NSNotFound;
+		DTCSSListStyleType listStyleType = DTCSSListStyleTypeNone;
+		DTCSSListStylePosition listStylePosition = DTCSSListStylePositionInherit;
 		
 		for (NSString *oneComponent in components)
 		{
@@ -101,7 +115,7 @@
 				// check if valid type
 				listStyleType = [DTCSSListStyle listStyleTypeFromString:oneComponent];
 				
-				if (listStyleType != NSNotFound)
+				if (listStyleType != DTCSSListStyleTypeInvalid)
 				{
 					[styles setObject:oneComponent forKey:@"list-style-type"];
 					
@@ -115,7 +129,7 @@
 				// check if valid position
 				listStylePosition = [DTCSSListStyle listStylePositionFromString:oneComponent];
 				
-				if (listStylePosition != NSNotFound)
+				if (listStylePosition != DTCSSListStylePositionInvalid)
 				{
 					[styles setObject:oneComponent forKey:@"list-style-position"];
 
@@ -162,18 +176,47 @@
 	}
 }
 
+
+// TODO: make parsing more robust, deal with comments properly
 - (void)parseStyleBlock:(NSString*)css
 {
-	int braceLevel = 0, braceMarker = 0;
+	NSUInteger braceLevel = 0, braceMarker = 0;
 	
 	NSString* selector;
 	
-	for (int i = 0, l = [css length]; i < l; i++) {
+	NSInteger length = [css length];
+	
+	for (NSUInteger i = 0; i < length; i++) {
 		
 		unichar c = [css characterAtIndex:i];
 		
-		// An opening brace! It could be the start of a new rule, or it could be a nested brace.
+		if (c == '/')
+		{
+			i++;
+			// skip until closing /
+			
+			for (; i < length; i++)
+			{
+				if ([css characterAtIndex:i] == '/')
+				{
+					break;
+				}
+			}
+			
+			if (i < length)
+			{
+				braceMarker = i+1;
+				continue;
+			}
+			else
+			{
+				// end of string
+				return;
+			}
+		}
 		
+		
+		// An opening brace! It could be the start of a new rule, or it could be a nested brace.
 		if (c == '{') {
 			
 			// If we start a new rule...

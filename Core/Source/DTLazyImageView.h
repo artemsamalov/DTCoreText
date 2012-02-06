@@ -18,8 +18,7 @@
 - (void)lazyImageView:(DTLazyImageView *)lazyImageView didTouchEvent:(UITapGestureRecognizer*)sender;
 @end
 
-@interface DTLazyImageView : UIImageView 
-
+@interface DTLazyImageView : UIImageView
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, assign) BOOL shouldShowProgressiveDownload;
 
