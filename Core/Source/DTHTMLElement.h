@@ -6,15 +6,22 @@
 //  Copyright 2011 Drobnik.com. All rights reserved.
 //
 
-
+#import "DTCoreText.h"
+#import "DTColor+HTML.h"
 
 @class DTCoreTextParagraphStyle;
 @class DTCoreTextFontDescriptor;
 @class DTTextAttachment;
 @class DTCSSListStyle;
 
-#import <CoreText/CoreText.h>
 
+typedef enum
+{
+	DTHTMLElementDisplayStyleInline = 0, // default
+	DTHTMLElementDisplayStyleNone,
+	DTHTMLElementDisplayStyleBlock,
+	DTHTMLElementDisplayStyleListItem
+} DTHTMLElementDisplayStyle;
 
 typedef enum
 {
@@ -22,7 +29,6 @@ typedef enum
 	DTHTMLElementFloatStyleLeft,
 	DTHTMLElementFloatStyleRight
 } DTHTMLElementFloatStyle;
-
 
 typedef enum
 {
@@ -33,13 +39,13 @@ typedef enum
 
 @interface DTHTMLElement : NSObject <NSCopying>
 
-@property (nonatomic, assign) DTHTMLElement *parent;	// subtle simulator bug - use assign not __unsafe_unretained
+@property (nonatomic, strong) DTHTMLElement *parent;
 @property (nonatomic, copy) DTCoreTextFontDescriptor *fontDescriptor;
 @property (nonatomic, copy) DTCoreTextParagraphStyle *paragraphStyle;
 @property (nonatomic, strong) DTTextAttachment *textAttachment;
 @property (nonatomic, copy) NSURL *link;
-@property (nonatomic, strong) UIColor *textColor;
-@property (nonatomic, strong) UIColor *backgroundColor;
+@property (nonatomic, strong) DTColor *textColor;
+@property (nonatomic, strong) DTColor *backgroundColor;
 @property (nonatomic, copy) NSString *tagName;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSArray *shadows;
@@ -48,8 +54,7 @@ typedef enum
 @property (nonatomic, assign) BOOL strikeOut;
 @property (nonatomic, assign) NSInteger superscriptStyle;
 @property (nonatomic, assign) NSInteger headerLevel;
-@property (nonatomic, readonly) BOOL isInline;
-@property (nonatomic, readonly) BOOL isMeta;
+@property (nonatomic, assign) DTHTMLElementDisplayStyle displayStyle;
 @property (nonatomic, readonly) DTHTMLElementFloatStyle floatStyle;
 @property (nonatomic, assign) BOOL isColorInherited;
 @property (nonatomic, assign) BOOL preserveNewlines;

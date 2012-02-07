@@ -15,6 +15,9 @@
 #import "UIDevice+DTVersion.h"
 
 #import "NSString+Paragraphs.h"
+#import "DTColor+HTML.h"
+#import "DTImage+HTML.h"
+
 
 // global flag that shows debug frames
 static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
@@ -230,7 +233,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 
 - (void)setShadowInContext:(CGContextRef)context fromDictionary:(NSDictionary *)dictionary
 {
-	UIColor *color = [dictionary objectForKey:@"Color"];
+	DTColor *color = [dictionary objectForKey:@"Color"];
 	CGSize offset = [[dictionary objectForKey:@"Offset"] CGSizeValue];
 	CGFloat blur = [[dictionary objectForKey:@"Blur"] floatValue];
 	
@@ -491,7 +494,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 					{
 						if (attachment.contentType == DTTextAttachmentTypeImage)
 						{
-							UIImage *image = (id)attachment.contents;
+							DTImage *image = (id)attachment.contents;
 							
 							CGPoint origin = oneRun.frame.origin;
 							origin.y = self.frame.size.height - origin.y - oneRun.ascent;
@@ -773,23 +776,34 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	}
 	
 	previousLineOrigin = [[self.lines objectAtIndex:0] baselineOrigin];
-	
+		
 	for (DTCoreTextLayoutLine *currentLine in self.lines)
 	{
 		CGPoint currentOrigin;
 		
 		if (previousLine)
 		{
-			currentOrigin.y = previousLineOrigin.y + previousLine.descent + currentLine.ascent + currentLine.leading + [previousLine paragraphSpacing];
+			CGFloat lineHeightMultiplier = [previousLine calculatedLineHeightMultiplier];
+			// TODO: correct spacing between paragraphs with line height multiplier > 1
 			
+			CGFloat spaceAfterPreviousLine = [previousLine paragraphSpacing:YES]; // already multiplied
+			CGFloat lineHeight = previousLine.descent + currentLine.ascent + currentLine.leading;
+			
+			if (spaceAfterPreviousLine > 0) {
+				// last paragraph, don't use line multiplier on current line values, use space specified
+				lineHeight += spaceAfterPreviousLine + previousLine.descent * (lineHeightMultiplier-1.);
+			} else {
+				// apply multiplier
+				lineHeight *= lineHeightMultiplier;
+			}
+						
+			// space the current line baseline lineHeight px from previous line
+			currentOrigin.y = roundf(previousLineOrigin.y + lineHeight); 
 			currentOrigin.x = currentLine.baselineOrigin.x;
 			
-			previousLineOrigin = currentOrigin;
-			
-			currentOrigin.y = roundf(currentOrigin.y);
-			//	origin.x = roundf(origin.x);
-			
 			currentLine.baselineOrigin = currentOrigin;
+			
+			previousLineOrigin = currentOrigin;
 		}
 		
 		previousLine = currentLine;

@@ -9,14 +9,27 @@
 #import "NSAttributedStringHTMLTest.h"
 #import "NSAttributedString+HTML.h"
 
+#import "NSAttributedString+DTCoreText.h"
+
+#import "DTHTMLAttributedStringBuilder.h"
+
 @implementation NSAttributedStringHTMLTest
+
+- (NSAttributedString *)attributedStringFromHTML:(NSString *)html
+{
+	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
+	DTHTMLAttributedStringBuilder	*stringBuilder = [[DTHTMLAttributedStringBuilder alloc] initWithHTML:data options:nil documentAttributes:NULL];
+
+	[stringBuilder buildString];
+	
+	return [stringBuilder generatedAttributedString];
+}
 
 - (void)testParagraphs
 {
 	NSString *html = @"Prefix<p>One\ntwo\n<br>three</p><p>New Paragraph</p>Suffix";
-	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
+	NSAttributedString *string = [self attributedStringFromHTML:html];
 	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
 	NSData *dump = [[string string] dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *resultOnIOS = [dump description];
 	
@@ -29,9 +42,8 @@
 - (void)testHeaderParagraphs
 {
 	NSString *html = @"Prefix<h1>One</h1><h2>One</h2><h3>One</h3><h4>One</h4><h5>One</h5><p>New Paragraph</p>Suffix";
-	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
+	NSAttributedString *string = [self attributedStringFromHTML:html];
 	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
 	NSData *dump = [[string string] dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *resultOnIOS = [dump description];
 	
@@ -41,16 +53,11 @@
 }
 
 
-/*
- 
- // broken by workaround to insert extra space after list
 - (void)testListParagraphs
 {
 	NSString *html = @"<p>Before</p><ul><li>One</li><li>Two</li></ul><p>After</p>";	
+	NSAttributedString *string = [self attributedStringFromHTML:html];
 	
-	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
-	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
 	NSData *dump = [[string string] dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *resultOnIOS = [dump description];
 	
@@ -58,15 +65,12 @@
 	
 	STAssertEqualObjects(resultOnIOS, resultOnMac, @"Output on List Test differs");
 }
- */
 
 - (void)testImageParagraphs
 {
 	NSString *html = @"<p>Before</p><img src=\"Oliver.jpg\"><h1>Header</h2><p>after</p><p>Some inline <img src=\"Oliver.jpg\"> text.</p>";	
-	
-	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
-	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
+	NSAttributedString *string = [self attributedStringFromHTML:html];
+
 	NSData *dump = [[string string] dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *resultOnIOS = [dump description];
 	
@@ -78,10 +82,8 @@
 - (void)testSpaceNormalization
 {
 	NSString *html = @"<p>Now there is some <b>bold</b>\ntext and  spaces\n    should be normalized.</p>";	
-	
-	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
-	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
+	NSAttributedString *string = [self attributedStringFromHTML:html];
+
 	NSData *dump = [[string string] dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *resultOnIOS = [dump description];
 	
@@ -93,10 +95,8 @@
 - (void)testSpaceAndNewlines
 {
 	NSString *html = @"<a>bla</a>\nfollows\n<font color=\"blue\">NSString</font> <font color=\"purple\">*</font>str <font color=\"#000000\">=</font> @<font color=\"#E40000\">\"The Quick Brown Fox Brown\"</font>;";
-	
-	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
-	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
+	NSAttributedString *string = [self attributedStringFromHTML:html];
+
 	NSData *dump = [[string string] dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *resultOnIOS = [dump description];
 	
@@ -107,11 +107,9 @@
 
 - (void)testMissingClosingTagAndSpacing
 {
-	NSString *html = @" image \n <a href=\"http://sv.wikipedia.org/wiki/Fil:V%C3%A4dersoltavlan_cropped.JPG\"\n late</a> last";
-	
-	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
-	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
+	NSString *html = @"<span>image \n <a href=\"http://sv.wikipedia.org/wiki/Fil:V%C3%A4dersoltavlan_cropped.JPG\"\n late</a> last</span>";
+	NSAttributedString *string = [self attributedStringFromHTML:html];
+
 	NSData *dump = [[string string] dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *resultOnIOS = [dump description];
 	
@@ -122,6 +120,17 @@
 }
 
 
+- (void)testAttributedStringColorToHTML {
+	NSMutableAttributedString *string = [[NSMutableAttributedString alloc]initWithString: @"test"];
+	
+	UIColor *color = [ UIColor colorWithRed: 1.0 green: 0.0 blue: 0.0 alpha: 1.0 ];
 
+	[ string setAttributes: [ NSDictionary dictionaryWithObject: (id)color.CGColor forKey: (id)kCTForegroundColorAttributeName ] range: NSMakeRange(0, 2) ];	
+	
+	NSString *expected = @"<span><span style=\"color:#ff0000;\">te</span>st</span>\n";
+
+	STAssertEqualObjects([ string htmlString ], expected, @"Output on HTML string color test differs");
+
+}
 
 @end
