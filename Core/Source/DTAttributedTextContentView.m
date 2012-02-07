@@ -12,11 +12,15 @@
 
 #import "DTTextAttachment.h"
 #import "NSString+HTML.h"
-#import "UIColor+HTML.h"
+#import "DTColor+HTML.h"
 
 #import "DTLinkButton.h"
 
 #import <QuartzCore/QuartzCore.h>
+
+#if !__has_feature(objc_arc)
+#error THIS CODE MUST BE COMPILED WITH ARC ENABLED!
+#endif
 
 // Commented code useful to find deadlocks
 #define SYNCHRONIZE_START(lock) /* NSLog(@"LOCK: FUNC=%s Line=%d", __func__, __LINE__), */dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
@@ -42,6 +46,7 @@
 	CGPoint _layoutOffset;
     CGSize _backgroundOffset;
 	
+	NSMutableArray *_images;
 	// lookup bitmask what delegate methods are implemented
 	struct 
 	{
@@ -100,7 +105,7 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 	// possibly already set in NIB
 	if (!self.backgroundColor)
 	{
-		self.backgroundColor = [UIColor whiteColor];
+		self.backgroundColor = [DTColor whiteColor];
 	}
 	
 	// set tile size if applicable
@@ -592,11 +597,11 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 	}
 }
 
-- (void)setBackgroundColor:(UIColor *)newColor
+- (void)setBackgroundColor:(DTColor *)newColor
 {
 	super.backgroundColor = newColor;
 	
-	if ([newColor alpha]<1.0)
+	if ([newColor alphaComponent]<1.0)
 	{
 		self.opaque = NO;
 	}
@@ -739,6 +744,26 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 	}
 }
 
+- (NSMutableArray*)images {
+	if (_images) {
+		_images = [NSMutableArray new];
+        DTCoreTextLayoutFrame *theLayoutFrame = self.layoutFrame;
+        NSArray *lines = [theLayoutFrame lines];
+        
+        for (DTCoreTextLayoutLine *oneLine in lines) {
+            for (DTCoreTextGlyphRun *oneRun in oneLine.glyphRuns) {
+                DTTextAttachment *attachment = oneRun.attachment;
+                
+                if (attachment && attachment.contentType == DTTextAttachmentTypeImage) {
+                    if (attachment.contentURL) {
+                        [_images addObject:attachment.contentURL];
+                    }
+                }
+            }
+        }
+	}
+	return _images;
+}
 
 - (dispatch_semaphore_t)selfLock
 {
@@ -765,5 +790,6 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 @synthesize customViews;
 @synthesize customViewsForLinksIndex;
 @synthesize customViewsForAttachmentsIndex;
+@synthesize images = _images;
 
 @end

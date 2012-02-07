@@ -60,6 +60,7 @@
 @property (nonatomic) BOOL shouldLayoutCustomSubviews;
 @property (nonatomic) CGPoint layoutOffset;
 @property (nonatomic) CGSize backgroundOffset;
+@property (nonatomic, retain) NSMutableArray *images;
 
 @property (nonatomic, assign) IBOutlet id <DTAttributedTextContentViewDelegate> delegate;	// subtle simulator bug - use assign not __unsafe_unretained
 
