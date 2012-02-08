@@ -741,7 +741,7 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 }
 
 - (NSMutableArray*)images {
-	if (_images) {
+	if (!_images) {
 		_images = [NSMutableArray new];
         DTCoreTextLayoutFrame *theLayoutFrame = self.layoutFrame;
         NSArray *lines = [theLayoutFrame lines];

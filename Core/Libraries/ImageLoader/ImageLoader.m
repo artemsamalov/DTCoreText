@@ -7,13 +7,12 @@
 //
 
 #import "ImageLoader.h"
-#import "Macros.h"
 #import "ObjectStorage.h"
 #import "NetworkManager.h"
 #import "UIImage+NSCoding.h"
 #import "UIImage+Resize.h"
 #import "UIImage+Alpha.h"
-#import "Utils.h"
+#import "Macros.h"
 
 typedef void (^CallbackAction)(UIImage* newImage);
 
