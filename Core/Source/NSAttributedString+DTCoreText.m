@@ -41,7 +41,7 @@
 		NSRange range;
 		NSDictionary *attributes = [self attributesAtIndex:index effectiveRange:&range];
 		
-		DTTextAttachment *attachment = [attributes objectForKey:@"DTTextAttachment"];
+		DTTextAttachment *attachment = [attributes objectForKey:NSAttachmentAttributeName];
 		
 		if (attachment)
 		{
@@ -185,7 +185,7 @@
 				continue;
 			}
 			
-			DTTextAttachment *attachment = [attributes objectForKey:@"DTTextAttachment"];
+			DTTextAttachment *attachment = [attributes objectForKey:NSAttachmentAttributeName];
 			
 			
 			if (attachment)
@@ -250,6 +250,33 @@
 				if (attachment.originalSize.height>0)
 				{
 					[styleString appendFormat:@"height:%.0fpx;", attachment.originalSize.height];
+				}
+				
+				if (attachment.verticalAlignment != DTTextAttachmentVerticalAlignmentBaseline)
+				{
+					switch (attachment.verticalAlignment) 
+					{
+						case DTTextAttachmentVerticalAlignmentBaseline:
+						{
+							[styleString appendString:@"vertical-align:baseline;"];
+							break;
+						}
+						case DTTextAttachmentVerticalAlignmentTop:
+						{
+							[styleString appendString:@"vertical-align:text-top;"];
+							break;
+						}	
+						case DTTextAttachmentVerticalAlignmentCenter:
+						{
+							[styleString appendString:@"vertical-align:middle;"];
+							break;
+						}
+						case DTTextAttachmentVerticalAlignmentBottom:
+						{
+							[styleString appendString:@"vertical-align:text-bottom;"];
+							break;
+						}
+					}
 				}
 				
 				if ([styleString length])
