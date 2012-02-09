@@ -8,7 +8,7 @@
 
 #import "DTAttributedTextView.h"
 #import "DTAttributedTextContentView.h"
-
+#import "Const.h"
 #import "DTColor+HTML.h"
 
 @interface DTAttributedTextView ()
@@ -57,6 +57,10 @@
 // default
 - (void)setup
 {
+    UITapGestureRecognizer *singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTouch:)];
+    [self addGestureRecognizer:singleFingerTap];
+    
+    self.scrollIndicatorInsets=UIEdgeInsetsMake(0.0, 0.0, 80.0, 0.0);
 	if (!self.backgroundColor)
 	{
 		self.backgroundColor = [DTColor whiteColor];
@@ -79,6 +83,16 @@
 	
 	self.autoresizesSubviews = YES;
 	self.clipsToBounds = YES;
+}
+
+- (void)handleTouch:(UITapGestureRecognizer *)gesture
+{
+    NSMutableDictionary *options = [NSMutableDictionary new];
+        
+    [options setObject:[NSNumber numberWithFloat:self.contentOffset.y] forKey:@"contentOffsetY"];
+    [options setObject:gesture forKey:@"gesture"];
+        
+    [[NSNotificationCenter defaultCenter] postNotificationName:TOUCH_ON_TOP_VIEW_NOTIFICATION object:options];
 }
 
 // override class e.g. for mutable content view
