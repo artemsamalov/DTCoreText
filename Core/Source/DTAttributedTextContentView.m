@@ -169,6 +169,7 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 	{
 		NSAttributedString *layoutString = [theLayoutFrame attributedStringFragment];
 		NSArray *lines;
+		rect = CGRectMake(rect.origin.x, rect.origin.y-rect.size.height, rect.size.width, rect.size.height*3);
 		if (CGRectIsInfinite(rect))
 		{
 			lines = [theLayoutFrame lines];
@@ -507,9 +508,11 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 - (void)removeSubviewsOutsideRect:(CGRect)rect
 {
 	NSSet *allCustomViews = [NSSet setWithSet:customViews];
+	float maxY = CGRectGetMaxY(rect) + rect.size.height;
+	float minY = CGRectGetMinY(rect) - rect.size.height;
 	for (UIView *customView in allCustomViews)
 	{
-		if (CGRectGetMinY(customView.frame)> CGRectGetMaxY(rect) || CGRectGetMaxY(customView.frame) < CGRectGetMinY(rect))
+		if (CGRectGetMinY(customView.frame) > maxY || CGRectGetMaxY(customView.frame) < minY)
 		{
 			NSNumber *indexKey = [NSNumber numberWithInteger:customView.tag];
 			

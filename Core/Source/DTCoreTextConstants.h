@@ -7,6 +7,7 @@ extern NSString *NSTextSizeMultiplierDocumentOption;
 extern NSString *NSAttachmentAttributeName; 
 
 extern NSString *DTMaxImageSize;
+extern NSString *DTMinImageSize;
 extern NSString *DTDefaultFontFamily;
 extern NSString *DTDefaultTextColor;
 extern NSString *DTDefaultLinkColor;

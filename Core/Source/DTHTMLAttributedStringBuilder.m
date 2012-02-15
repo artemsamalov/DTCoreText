@@ -169,7 +169,7 @@
 	
 	// base tag with font defaults
 	defaultFontDescriptor = [[DTCoreTextFontDescriptor alloc] initWithFontAttributes:nil];
-	defaultFontDescriptor.pointSize = 12.0f * textScale;
+	defaultFontDescriptor.pointSize = 14.0f * textScale;
 	
 	NSString *defaultFontFamily = [_options objectForKey:DTDefaultFontFamily];
 	if (defaultFontFamily)
@@ -309,48 +309,50 @@
 		// make appropriate attachment
 		DTTextAttachment *attachment = [DTTextAttachment textAttachmentWithElement:currentTag options:_options];
 		
-		// add it to tag
-		currentTag.textAttachment = attachment;
-		
-		// to avoid much too much space before the image
-		currentTag.paragraphStyle.lineHeightMultiple = 1;
-		
-		// specifiying line height interfers with correct positioning
-		currentTag.paragraphStyle.minimumLineHeight = 0;
-		currentTag.paragraphStyle.maximumLineHeight = 0;
-		
-		// caller gets opportunity to modify image tag before it is written
-		if (_willFlushCallback)
-		{
-			_willFlushCallback(currentTag);
-		}
-		
-		// maybe the image is forced to show as block, then we want a newline before and after
-		if (currentTag.displayStyle == DTHTMLElementDisplayStyleBlock)
-		{
-			needsNewLineBefore = YES;
-		}
-		
-		if (needsNewLineBefore)
-		{
-			if ([tmpString length] && !outputHasNewline)
-			{
-				[tmpString appendNakedString:@"\n"];
-				outputHasNewline = YES;
-			}
-			
-			needsNewLineBefore = NO;
-		}
-		
-		// add it to output
-		[tmpString appendAttributedString:[currentTag attributedString]];	
-		outputHasNewline = NO;
-		currentTagIsEmpty = NO;
-		
-//		if (currentTag.displayStyle == DTHTMLElementDisplayStyleBlock)
-//		{
-//			needsNewLineBefore = YES;
-//		}
+		if (attachment) {
+            // add it to tag
+            currentTag.textAttachment = attachment;
+            
+            // to avoid much too much space before the image
+            currentTag.paragraphStyle.lineHeightMultiple = 1;
+            
+            // specifiying line height interfers with correct positioning
+            currentTag.paragraphStyle.minimumLineHeight = 0;
+            currentTag.paragraphStyle.maximumLineHeight = 0;
+            
+            // caller gets opportunity to modify image tag before it is written
+            if (_willFlushCallback)
+            {
+                _willFlushCallback(currentTag);
+            }
+            
+            // maybe the image is forced to show as block, then we want a newline before and after
+            if (currentTag.displayStyle == DTHTMLElementDisplayStyleBlock)
+            {
+                needsNewLineBefore = YES;
+            }
+            
+            if (needsNewLineBefore)
+            {
+                if ([tmpString length] && !outputHasNewline)
+                {
+                    [tmpString appendNakedString:@"\n"];
+                    outputHasNewline = YES;
+                }
+                
+                needsNewLineBefore = NO;
+            }
+            
+            // add it to output
+            [tmpString appendAttributedString:[currentTag attributedString]];	
+            outputHasNewline = NO;
+            currentTagIsEmpty = NO;
+            
+            //		if (currentTag.displayStyle == DTHTMLElementDisplayStyleBlock)
+            //		{
+            //			needsNewLineBefore = YES;
+            //		}
+        }
 	};
 	
 	[_tagStartHandlers setObject:[imgBlock copy] forKey:@"img"];

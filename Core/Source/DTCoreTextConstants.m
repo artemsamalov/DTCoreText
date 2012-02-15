@@ -8,6 +8,7 @@ NSString *NSAttachmentAttributeName = @"NSAttachmentAttributeName";
 
 // custom options
 NSString *DTMaxImageSize = @"DTMaxImageSize";
+NSString *DTMinImageSize = @"DTMinImageSize";
 NSString *DTDefaultFontFamily = @"DTDefaultFontFamily";
 NSString *DTDefaultTextColor = @"DTDefaultTextColor";
 NSString *DTDefaultLinkColor = @"DTDefaultLinkColor";

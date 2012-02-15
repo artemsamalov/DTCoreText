@@ -60,16 +60,26 @@
 	
 	// determine if there is a display size restriction
 	CGSize maxImageSize = CGSizeZero;
+	CGSize minImageSize = CGSizeZero;
 	
 	NSValue *maxImageSizeValue =[options objectForKey:DTMaxImageSize];
 	if (maxImageSizeValue)
 	{
 		maxImageSize = [maxImageSizeValue CGSizeValue];
 	}
-	
+
+    NSValue *minImageSizeValue =[options objectForKey:DTMaxImageSize];
+    if (minImageSizeValue) {
+        minImageSize = [minImageSizeValue CGSizeValue];
+    }
+
 	// width, height from tag
 	CGSize displaySize = element.size; // width/height from attributes or CSS style
 	CGSize originalSize = element.size;
+	
+	if (attachmentType == DTTextAttachmentTypeImage && displaySize.width <= minImageSize.width && displaySize.height <= minImageSize.height) {
+        return nil;
+    }
 	
 	// get base URL
 	NSURL *baseURL = [options objectForKey:NSBaseURLDocumentOption];
