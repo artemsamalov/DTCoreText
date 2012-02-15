@@ -68,7 +68,7 @@
 		maxImageSize = [maxImageSizeValue CGSizeValue];
 	}
 
-    NSValue *minImageSizeValue =[options objectForKey:DTMaxImageSize];
+    NSValue *minImageSizeValue =[options objectForKey:DTMinImageSize];
     if (minImageSizeValue) {
         minImageSize = [minImageSizeValue CGSizeValue];
     }
