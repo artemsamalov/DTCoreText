@@ -13,10 +13,11 @@
 #import "NSScanner+HTML.h"
 #import "NSString+CSS.h"
 
+#define DEFAULT_CSS         @"html{display:block;}head{display:none;}title{display:none;}style{display:none;}body{display:block;}article,aside,footer,header,hgroup,nav,section{display:block;}p{display:block;-webkit-margin-before:1em;-webkit-margin-after:1em;-webkit-margin-start:0;-webkit-margin-end:0;}ul,menu,dir{display:block;list-style-type:disc;-webkit-margin-before:1em;-webkit-margin-after:1em;-webkit-margin-start:0;-webkit-margin-end:0;-webkit-padding-start:40px;}li{display:list-item;}ol{display:block;list-style-type:decimal;-webkit-margin-before:1em;-webkit-margin-after:1em;-webkit-margin-start:0;-webkit-margin-end:0;-webkit-padding-start:40px;}code{font-family:Courier;}pre{font-family:Courier;}/* color:-webkit-link */a{color:#0000EE;text-decoration:underline;}center{text-align:center;display:block;}strong,b{font-weight:bolder;}i,em{font-style:italic;}u{text-decoration:underline;}big{font-size:bigger;}small{font-size:smaller;}sub{font-size:smaller;vertical-align:sub;}sup{font-size:smaller;vertical-align:super;}s,strike,del{text-decoration:line-through;}tt,code,kbd,samp{font-family:monospace;}pre,xmp,plaintext,listing{display:block;font-family:monospace;white-space:pre;margin-top:1em;margin-right:0;margin-bottom:1em;margin-left:0;}h1{display:block;font-size:2em;-webkit-margin-before:.67em;-webkit-margin-after:.67em;-webkit-margin-start:0;-webkit-margin-end:0;font-weight:bold;}h2{display:block;font-size:1.5em;-webkit-margin-before:.83em;-webkit-margin-after:.83em;-webkit-margin-start:0;-webkit-margin-end:0;font-weight:bold;}h3{display:block;font-size:1.17em;-webkit-margin-before:1em;-webkit-margin-after:1em;-webkit-margin-start:0;-webkit-margin-end:0;font-weight:bold;}h4{display:block;-webkit-margin-before:1.33em;-webkit-margin-after:1.33em;-webkit-margin-start:0;-webkit-margin-end:0;font-weight:bold;}h5{display:block;font-size:.83em;-webkit-margin-before:1.67em;-webkit-margin-after:1.67em;-webkit-margin-start:0;-webkit-margin-end:0;font-weight:bold;}h6{display:block;font-size:.67em;-webkit-margin-before:2.33em;-webkit-margin-after:2.33em;-webkit-margin-start:0;-webkit-margin-end:0;font-weight:bold;}div {display: block;}link {display: none;}meta {display: none;}script {display: none;}"
 
 // external symbols generated via custom build rule and xxd
-extern unsigned char default_css[];
-extern unsigned int default_css_len;
+//extern unsigned char default_css[];
+//extern unsigned int default_css_len;
 
 
 @interface DTCSSStylesheet ()
@@ -34,9 +35,10 @@ extern unsigned int default_css_len;
 
 + (DTCSSStylesheet *)defaultStyleSheet
 {
+	NSString *cssString = DEFAULT_CSS;
 	// get the data from the external symbol
-	NSData *data = [NSData dataWithBytes:default_css length:default_css_len];
-	NSString *cssString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	//NSData *data = [NSData dataWithBytes:default_css length:default_css_len];
+	//NSString *cssString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	
 	return [[DTCSSStylesheet alloc] initWithStyleBlock:cssString];
 }
